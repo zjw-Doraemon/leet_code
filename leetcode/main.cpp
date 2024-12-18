@@ -1570,7 +1570,332 @@ std::vector<int>  postorderTraversal_(TreeNode* root) {
 
     return result;
 }
+// 层序遍历
+void printQueue(const std::queue<TreeNode*>& q) {
+    std::queue<TreeNode*> temp = q; // 复制队列以进行观察
+    std::cout << "当前队列状态：";
+    while (!temp.empty()) {
+        std::cout << temp.front()->val << " "; // 假设TreeNode有val成员
+        temp.pop();
+    }
+    std::cout << std::endl;
+}
+vector<vector<int>> levelOrder(TreeNode* root) {
+    if (root == nullptr) {
+        return {};
+    }
+    std::queue<TreeNode*> level;
+    vector<vector<int>> result;   
+    level.push(root);
+    while (!level.empty()) {
+        vector<int> tmp;
+        //printQueue(level);
+        int size = level.size();
+       
+        for (int i = 0; i < size; i++) {
+            tmp.push_back(level.front()->val);
+            if (level.front()->left != nullptr) {
+                level.push(level.front()->left);
+            }
+            if (level.front()->right != nullptr) {
+                level.push(level.front()->right);             
+            }
+            level.pop();           
+        }       
+        result.push_back(tmp);       
+    }
+    return result;
+}
+// 自底向上 层序遍历 107
+vector<vector<int>> levelOrderBottom(TreeNode* root) {
+    if (root == nullptr) {
+        return {};
+    }
+    std::queue<TreeNode*> level;
+    vector<vector<int>> result;
+    level.push(root);
+    while (!level.empty()) {
+        vector<int> tmp;
+        //printQueue(level);
+        int size = level.size();
 
+        for (int i = 0; i < size; i++) {
+            tmp.push_back(level.front()->val);
+            if (level.front()->left != nullptr) {
+                level.push(level.front()->left);
+            }
+            if (level.front()->right != nullptr) {
+                level.push(level.front()->right);
+            }
+            level.pop();
+        }
+        result.push_back(tmp);
+    }
+    std::reverse(result.begin(),result.end());
+    return result;
+}
+// 右侧视图
+vector<int> rightSideView(TreeNode* root) {
+    if (root == nullptr) {
+        return {};
+    }
+    std::queue<TreeNode*> level;
+    vector<vector<int>> result;
+    vector<int> result_true;
+    level.push(root);
+    while (!level.empty()) {
+        vector<int> tmp;
+        //printQueue(level);
+        int size = level.size();
+
+        for (int i = 0; i < size; i++) {
+            tmp.push_back(level.front()->val);
+            if (level.front()->left != nullptr) {
+                level.push(level.front()->left);
+            }
+            if (level.front()->right != nullptr) {
+                level.push(level.front()->right);
+            }
+            level.pop();
+        }
+        result.push_back(tmp);
+    }
+    for (auto c : result) {
+        result_true.push_back(*(c.end()-1));
+    }
+    return result_true;
+}
+// 每一层 平均值
+vector<double> averageOfLevels(TreeNode* root) {
+    if (root == nullptr) {
+        return {};
+    }
+    std::queue<TreeNode*> level;
+    vector<vector<double>> result;
+    vector<double> result_true;
+    level.push(root);
+    while (!level.empty()) {
+        vector<double> tmp;
+        //printQueue(level);
+        int size = level.size();
+
+        for (int i = 0; i < size; i++) {
+            tmp.push_back(level.front()->val);
+            if (level.front()->left != nullptr) {
+                level.push(level.front()->left);
+            }
+            if (level.front()->right != nullptr) {
+                level.push(level.front()->right);
+            }
+            level.pop();
+        }
+        result.push_back(tmp);
+    }
+    for (auto c : result) {
+        double sum = 0;
+        for (int i : c) {
+            sum = sum + i;
+        }
+        result_true.push_back(static_cast<double>(sum)/ static_cast<double>(c.size()));
+    }
+    return result_true;
+}
+// n叉树的层序遍历 
+class Node {
+public:
+    int val;
+    vector<Node*> children;
+
+    Node() {}
+
+    Node(int _val) {
+        val = _val;
+    }
+
+    Node(int _val, vector<Node*> _children) {
+        val = _val;
+        children = _children;
+    }
+};
+vector<vector<int>> levelOrder(Node* root) {
+    if (root == nullptr) {
+        return {};
+    }
+    std::queue<Node*> level;
+    vector<vector<int>> result;
+    level.push(root);
+    while (!level.empty()) {
+        
+        vector<int> tmp;
+        //printQueue(level);
+        int size = level.size();
+
+        for (int i = 0; i < size; i++) {
+            tmp.push_back(level.front()->val);
+            if (!level.front()->children.empty()) {
+                for (auto c :level.front()->children) {
+                    level.push(c);
+                }
+            }
+            
+            level.pop();
+        }
+        result.push_back(tmp);
+    }
+    return result;
+}
+// 二叉树 每一层最大值
+vector<int> largestValues(TreeNode* root) {
+    if (root == nullptr) {
+        return {};
+    }
+    std::queue<TreeNode*> level;
+    vector<vector<int>> result;
+    vector<int> result_true;
+    level.push(root);
+    while (!level.empty()) {
+        vector<int> tmp;
+        //printQueue(level);
+        int size = level.size();
+
+        for (int i = 0; i < size; i++) {
+            tmp.push_back(level.front()->val);
+            if (level.front()->left != nullptr) {
+                level.push(level.front()->left);
+            }
+            if (level.front()->right != nullptr) {
+                level.push(level.front()->right);
+            }
+            level.pop();
+        }
+        result.push_back(tmp);
+    }
+    for (auto c : result) {
+        
+        int max = INT_MIN;
+        for (int i : c) {
+            if (i > max) {
+                max = i;
+            }
+        }
+        result_true.push_back(max);
+        
+    }
+    return result_true;
+}
+//116. 填充每个节点的下一个右侧节点指针
+namespace problem_116 {
+    struct Node {
+        int val;
+        Node* left;
+        Node* right;
+        Node* next;
+    };
+    Node* connect(Node* root) {
+        if (root == nullptr) {
+            return {};
+        }
+        std::queue<Node*> level;
+        vector<vector<Node*>> result;
+        vector<int> result_true;
+        level.push(root);
+        while (!level.empty()) {
+            vector<Node*> tmp;
+            //printQueue(level);
+            int size = level.size();
+
+            for (int i = 0; i < size; i++) {
+                tmp.push_back(level.front());
+                if (level.front()->left != nullptr) {
+                    level.push(level.front()->left);
+                }
+                if (level.front()->right != nullptr) {
+                    level.push(level.front()->right);
+                }
+                level.pop();
+            }
+            result.push_back(tmp);
+        }
+        for (auto c : result) {
+            Node* tmp = c[0];
+            for (int i = 0; i < c.size() - 1; i++) {
+                c[i]->next = c[i+1];
+
+            }
+        }
+        return root;
+    }
+   
+    
+}
+//代码  104. 二叉树的最大深度
+int maxDepth(TreeNode* root) {
+    if (root == nullptr) {
+        return {};
+    }
+    std::queue<TreeNode*> level;
+    vector<vector<int>> result;
+    vector<int> result_true;
+    level.push(root);
+    while (!level.empty()) {
+        vector<int> tmp;
+        //printQueue(level);
+        int size = level.size();
+
+        for (int i = 0; i < size; i++) {
+            tmp.push_back(level.front()->val);
+            if (level.front()->left != nullptr) {
+                level.push(level.front()->left);
+            }
+            if (level.front()->right != nullptr) {
+                level.push(level.front()->right);
+            }
+            level.pop();
+        }
+        result.push_back(tmp);
+    }
+    return result.size();
+}
+// 最小深度
+int minDepth(TreeNode* root) {
+    if (root == nullptr) {
+        return {};
+    }
+    std::queue<TreeNode*> level;
+    vector<vector<TreeNode*>> result;
+    int mix = 0;
+    
+    level.push(root);
+    while (!level.empty()) {
+        vector<TreeNode*> tmp;
+        //printQueue(level);
+        int size = level.size();
+
+        for (int i = 0; i < size; i++) {
+            tmp.push_back(level.front());
+            if (level.front()->left != nullptr) {
+                level.push(level.front()->left);
+            }
+            if (level.front()->right != nullptr) {
+                level.push(level.front()->right);
+            }
+            level.pop();
+        }
+        result.push_back(tmp);
+    }
+    for  (auto c : result) {
+        mix++;
+        for (TreeNode* a : c) {
+            if (a->left == NULL && a->right == NULL) {
+                return mix;
+            }
+            
+        }
+        
+    }
+    
+
+}
 
 
 int main() {
@@ -1848,8 +2173,8 @@ int main() {
         std::cout<<evalRPN(test);
     }*/
     // 二叉树的遍历
-    {
-       
+    /*{
+
 
         TreeNode* root = new TreeNode(1);
         root->right = new TreeNode(2);
@@ -1860,10 +2185,47 @@ int main() {
 
 
         Solution solution;
-        
+
         for (int c : preorderTraversal_(root)) {
             std::cout << c << " ";
         }
 
+    }*/
+    // 层序遍历
+    /*{
+        TreeNode* root = new TreeNode(3);
+        root->left = new TreeNode(9);
+        root->right = new TreeNode(20);
+        root->right->left = new TreeNode(15);
+        root->right->right = new TreeNode(7);
+
+
+        for (auto c : levelOrder(root)) {
+            for (int a : c) {
+                std::cout << a << " ";
+            }
+            std::cout << endl;
+        }
+    }*/
+    // 最小深度 
+    // 创建一个二叉树
+    {
+        TreeNode* root = new TreeNode(1);
+        root->left = new TreeNode(2);
+        root->right = new TreeNode(3);
+        root->left->left = new TreeNode(4);
+
+        // 测试 minDepth 函数
+        int depth = minDepth(root);
+        std::cout << "最小深度: " << depth << std::endl; // 应该输出 2 (`1->3`)
+
+        // 清理内存
+        delete root->left->left;
+        delete root->left;
+        delete root->right;
+        delete root;
     }
+
+
+
 }
