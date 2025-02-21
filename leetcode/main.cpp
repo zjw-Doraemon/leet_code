@@ -1896,8 +1896,279 @@ int minDepth(TreeNode* root) {
     
 
 }
+// 翻转二叉树
+
+    TreeNode* invertTree(TreeNode* root) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        invertTree(root->left);
+        invertTree(root->right);
+        TreeNode* tmp = root->left;
+        root->left = root->right;
+        root->right = tmp;
+        return root;
+    }
+    //n 叉树的前序遍历
+    class solution_1{
+
+    public:
+        vector<int> result;
+        vector<int> preorder(Node* root) {
+
+            if (root == nullptr) {
+                return {};
+            }
+            result.push_back(root->val);
+            for (Node* i : root->children) {
+                preorder(i);
+            }
+
+            return result;
+        }
+    };
+    //n 叉树的后序遍历
+    class solution_2 {
+
+    public:
+        vector<int> result;
+        vector<int> postorder(Node* root) {
+
+            if (root == nullptr) {
+                return {};
+            }
+            
+            for (Node* i : root->children) {
+                postorder(i);
+            }
+            result.push_back(root->val);
+            return result;
+        }
+    };
+// 101 对称二叉树
 
 
+    bool isSymmetric(TreeNode* root) {
+        if (root->left == nullptr && root->right == nullptr) return true;
+        if (root == nullptr || (root->left == nullptr || root->right == nullptr) ) {
+            return false;
+        }
+        std::stack<TreeNode*> left;
+        std::stack<TreeNode*> right;
+        
+        left.push(root->left);
+        right.push(root->right);
+        while (!left.empty() && !right.empty()) {
+            if (left.top()->val != right.top()->val ){
+                return false;
+            }
+
+            // 逻辑不错 gpt提到的 左右是否对称
+            if ((left.top()->left == nullptr) != (right.top()->right == nullptr) ||
+                (left.top()->right == nullptr) != (right.top()->left == nullptr)) {
+                return false;
+            }
+
+            TreeNode* tmp_left = left.top();
+            left.pop();
+            if (tmp_left->right != nullptr) { left.push(tmp_left->right); }
+            if (tmp_left->left != nullptr) { left.push(tmp_left->left); }
+
+            TreeNode* tmp_right = right.top();
+            right.pop();
+            if(tmp_right->left != nullptr) right.push(tmp_right -> left);
+            if (tmp_right->right != nullptr) right.push(tmp_right->right);
+        }
+        if (left.empty() && right.empty()) {
+            return true;
+        }
+        return false;
+        
+    }
+    //100 相同的树
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if (q== nullptr && p == nullptr) return true;
+        if ( q == nullptr || p == nullptr) {
+            return false;
+        }
+        std::stack<TreeNode*> left;
+        std::stack<TreeNode*> right;
+
+        left.push(q);
+        right.push(p);
+        while (!left.empty() && !right.empty()) {
+            if (left.top()->val != right.top()->val) {
+                return false;
+            }
+
+            // 逻辑不错 gpt提到的 左右是否对称
+            if ((left.top()->left == nullptr) != (right.top()->left == nullptr) ||
+                (left.top()->right == nullptr) != (right.top()->right == nullptr)) {
+                return false;
+            }
+
+            TreeNode* tmp_left = left.top();
+            left.pop();
+            if (tmp_left->right != nullptr) { left.push(tmp_left->right); }
+            if (tmp_left->left != nullptr) { left.push(tmp_left->left); }
+
+            TreeNode* tmp_right = right.top();
+            right.pop();
+            
+            if (tmp_right->right != nullptr) right.push(tmp_right->right);
+            if (tmp_right->left != nullptr) right.push(tmp_right->left);
+        }
+        if (left.empty() && right.empty()) {
+            return true;
+        }
+        return false;
+
+    }
+    //完全二叉树的 节点数量
+    int countNodes(TreeNode* root) {
+        if (root == nullptr) {
+            return 0;
+        }
+        int result = 0;
+        // 层序遍历
+        std::queue<TreeNode*> tmp;
+        tmp.push(root);
+        while (!tmp.empty()) {
+            result++;
+            if(tmp.front()->left != nullptr)tmp.push(tmp.front()->left);
+            if(tmp.front()->right != nullptr)tmp.push(tmp.front()->right);
+            tmp.pop();
+        }
+        return result;
+        
+    }
+    //节点定义
+    namespace problem_450
+    {
+        struct TreeNode {
+            int val;
+            TreeNode* left;
+            TreeNode* right;
+            TreeNode() : val(0), left(nullptr), right(nullptr) {}
+            TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+            TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
+
+        };
+        // 插入节点
+        void insert(TreeNode*& root, int val) {
+            if (root == nullptr) {
+                root = new TreeNode(val);  // 如果树为空，直接创建根节点
+                return;
+            }
+
+            TreeNode* tmp = root;
+            while (tmp != nullptr) {
+                // 查找插入位置
+                if (val < tmp->val) {
+                    if (tmp->left == nullptr) {
+                        tmp->left = new TreeNode(val);  // 在左子树插入
+                        return;
+                    }
+                    tmp = tmp->left;
+                }
+                else if (val > tmp->val) {
+                    if (tmp->right == nullptr) {
+                        tmp->right = new TreeNode(val);  // 在右子树插入
+                        return;
+                    }
+                    tmp = tmp->right;
+                }
+                else {
+                    return;  // 如果值已存在，直接返回（避免重复插入）
+                }
+            }
+        }
+        // 构造二叉树 
+        void create(TreeNode* root, int str[], int n) {
+            root = nullptr;
+            for (int i = 0; i < n; i++) {
+                insert(root, str[i]);
+            }
+        }
+        // 删除 二叉树中的节点
+         TreeNode* deleteNode(TreeNode* root, int key) {
+            TreeNode* tmp = root;
+            TreeNode* tmp_is_left_child = nullptr;
+            TreeNode* tmp_is_right_child = nullptr;
+            while (tmp != nullptr && tmp->val != key) {
+                if (tmp->val > key) {
+                    tmp_is_left_child = tmp;
+                    tmp_is_right_child = NULL;
+                    tmp = tmp->left;
+                }
+                else {
+                    tmp_is_right_child = tmp;
+                    tmp_is_left_child = NULL;
+                    tmp = tmp->right;
+                }
+            }
+            std::cout << "找到当前节点是" << tmp->val << std::endl;
+            if (tmp->left == nullptr && tmp->right == nullptr) {
+                if (tmp_is_left_child == nullptr && tmp_is_right_child != nullptr) {
+                    tmp_is_right_child->right = nullptr;
+                }
+                else {
+                    tmp_is_left_child->left = nullptr;
+                }
+			}       
+            if (tmp->left != nullptr && tmp->right == nullptr) {
+                if (tmp_is_left_child == nullptr && tmp_is_right_child != nullptr) {
+                    tmp_is_right_child->right = tmp->left;
+                }
+                else {
+                    tmp_is_left_child->left = tmp->left;
+                }
+            }
+            if (tmp->right != nullptr && tmp->left == nullptr) {
+                if (tmp_is_left_child == nullptr && tmp_is_right_child != nullptr) {
+                    tmp_is_right_child->right = tmp->right;
+                }
+                else {
+                    tmp_is_left_child->left = tmp->right;
+                }
+            }
+            if (tmp->left != nullptr && tmp->right != nullptr) {
+                // 找到右子树的最小值
+                std::vector<TreeNode*> result;
+                TreeNode* tmp_inorder = nullptr;
+                std::stack<TreeNode*> stack;
+                stack.push(tmp->right);
+                while (!stack.empty()) {
+                    if (stack.top() != nullptr) {
+                        TreeNode* p = stack.top();
+                        stack.pop();
+
+                        if (p->right != NULL) stack.push(p->right);
+
+                        stack.push(p);
+                        stack.push(nullptr);
+
+                        if (p->left != NULL) stack.push(p->left);
+                    }
+                    else {
+                        stack.pop();
+                        result.push_back(stack.top());
+                        stack.pop();
+                    }
+                }
+                tmp->val = result[0]->val;
+                result[1]->left = result[0]->right;
+
+            }
+            return root;
+         }
+         void inorderTraversal(TreeNode* root) {
+             if (root == nullptr) return;
+             inorderTraversal(root->left);
+             std::cout << root->val << " ";
+             inorderTraversal(root->right);
+         }
+    }
 int main() {
     // 704
     /*{
@@ -2127,79 +2398,125 @@ int main() {
     //    std::cout<<reverseWords(test);
     //}
 
-    // 右旋字符串
+// 右旋字符串
+/*{
+    string test = "abcdefg";
+    std::cout<<right_rotation(test,2);
+}*/
+// 用栈实现队列 232 
+//{
+//    // 创建 MyQueue 对象
+//    MyQueue test;
+
+//    // 执行测试操作
+//    test.push(1);        // 将 1 压入队列
+//    test.push(2);        // 将 2 压入队列
+//    std::cout << "Peek: " << test.peek() << std::endl;  // 输出 1，队头元素
+
+//    test.push(3);        // 将 3 压入队列
+//    std::cout << "Pop: " << test.pop() << std::endl;    // 输出 1，队头元素出队
+
+//    std::cout << "Peek: " << test.peek() << std::endl;  // 输出 2，队头元素
+
+//    test.push(4);        // 将 4 压入队列
+//    std::cout << "Pop: " << test.pop() << std::endl;    // 输出 2，队头元素出队
+//    std::cout << "Pop: " << test.pop() << std::endl;    // 输出 3，队头元素出队
+//    std::cout << "Pop: " << test.pop() << std::endl;    // 输出 4，队头元素出队
+
+//    // 测试队列是否为空
+//    std::cout << "Is queue empty? " << (test.empty() ? "Yes" : "No") << std::endl;  // 输出 Yes，队列为空
+
+//    return 0;
+//}
+// 有效的括号 20
+/* {
+     std::string test = "(])";
+     std::cout << isValid(test);
+ }*/
+ //1047 删除所有相邻重复的字符串
+/* {
+     string test = "tabbc";
+     std::cout<<removeDuplicates(test);
+ }*/
+ // 150 逆波兰表达式
+ /*{
+     vector<string> test = { "4","13","5","/","+" };
+     std::cout<<evalRPN(test);
+ }*/
+ // 二叉树的遍历
+ /*{
+
+
+     TreeNode* root = new TreeNode(1);
+     root->right = new TreeNode(2);
+     root->right->right = new TreeNode(3);
+     root->right->right->right = new TreeNode(4);
+     root->right->right->right->right = new TreeNode(5);
+     root->right->right->right->right->right = new TreeNode(6);
+
+
+     Solution solution;
+
+     for (int c : preorderTraversal_(root)) {
+         std::cout << c << " ";
+     }
+
+ }*/
+ // 层序遍历
+ /*{
+     TreeNode* root = new TreeNode(3);
+     root->left = new TreeNode(9);
+     root->right = new TreeNode(20);
+     root->right->left = new TreeNode(15);
+     root->right->right = new TreeNode(7);
+
+
+     for (auto c : levelOrder(root)) {
+         for (int a : c) {
+             std::cout << a << " ";
+         }
+         std::cout << endl;
+     }
+ }*/
+ // 最小深度 
+ // 创建一个二叉树
+ //{
+ //    TreeNode* root = new TreeNode(1);
+ //    root->left = new TreeNode(2);
+ //    root->right = new TreeNode(3);
+ //    root->left->left = new TreeNode(4);
+
+ //    // 测试 minDepth 函数
+ //    int depth = minDepth(root);
+ //    std::cout << "最小深度: " << depth << std::endl; // 应该输出 2 (`1->3`)
+
+ //    // 清理内存
+ //    delete root->left->left;
+ //    delete root->left;
+ //    delete root->right;
+ //    delete root;
+ //}
+ // 反转二叉树
     /*{
-        string test = "abcdefg";
-        std::cout<<right_rotation(test,2);
-    }*/
-    // 用栈实现队列 232 
-    //{
-    //    // 创建 MyQueue 对象
-    //    MyQueue test;
 
-    //    // 执行测试操作
-    //    test.push(1);        // 将 1 压入队列
-    //    test.push(2);        // 将 2 压入队列
-    //    std::cout << "Peek: " << test.peek() << std::endl;  // 输出 1，队头元素
+        TreeNode* root = new TreeNode(4);
+        root->left = new TreeNode(2);
+        root->right = new TreeNode(7);
 
-    //    test.push(3);        // 将 3 压入队列
-    //    std::cout << "Pop: " << test.pop() << std::endl;    // 输出 1，队头元素出队
+        root->left->left = new TreeNode(1);
+        root->left->right = new TreeNode(3);
 
-    //    std::cout << "Peek: " << test.peek() << std::endl;  // 输出 2，队头元素
-
-    //    test.push(4);        // 将 4 压入队列
-    //    std::cout << "Pop: " << test.pop() << std::endl;    // 输出 2，队头元素出队
-    //    std::cout << "Pop: " << test.pop() << std::endl;    // 输出 3，队头元素出队
-    //    std::cout << "Pop: " << test.pop() << std::endl;    // 输出 4，队头元素出队
-
-    //    // 测试队列是否为空
-    //    std::cout << "Is queue empty? " << (test.empty() ? "Yes" : "No") << std::endl;  // 输出 Yes，队列为空
-
-    //    return 0;
-    //}
-    // 有效的括号 20
-   /* {
-        std::string test = "(])";
-        std::cout << isValid(test);
-    }*/
-    //1047 删除所有相邻重复的字符串
-   /* {
-        string test = "tabbc";
-        std::cout<<removeDuplicates(test);
-    }*/
-    // 150 逆波兰表达式
-    /*{
-        vector<string> test = { "4","13","5","/","+" };
-        std::cout<<evalRPN(test);
-    }*/
-    // 二叉树的遍历
-    /*{
-
-
-        TreeNode* root = new TreeNode(1);
-        root->right = new TreeNode(2);
-        root->right->right = new TreeNode(3);
-        root->right->right->right = new TreeNode(4);
-        root->right->right->right->right = new TreeNode(5);
-        root->right->right->right->right->right = new TreeNode(6);
-
-
-        Solution solution;
-
-        for (int c : preorderTraversal_(root)) {
-            std::cout << c << " ";
+        root->right->left = new TreeNode(6);
+        root->right->right = new TreeNode(9);
+        levelOrder(root);
+        for (auto c : levelOrder(root)) {
+            for (int a : c) {
+                std::cout << a << " ";
+            }
+            std::cout << endl;
         }
-
-    }*/
-    // 层序遍历
-    /*{
-        TreeNode* root = new TreeNode(3);
-        root->left = new TreeNode(9);
-        root->right = new TreeNode(20);
-        root->right->left = new TreeNode(15);
-        root->right->right = new TreeNode(7);
-
-
+        invertTree(root);
+        levelOrder(root);
         for (auto c : levelOrder(root)) {
             for (int a : c) {
                 std::cout << a << " ";
@@ -2207,25 +2524,52 @@ int main() {
             std::cout << endl;
         }
     }*/
-    // 最小深度 
-    // 创建一个二叉树
-    {
-        TreeNode* root = new TreeNode(1);
-        root->left = new TreeNode(2);
-        root->right = new TreeNode(3);
-        root->left->left = new TreeNode(4);
+    //n叉树的前序遍历
+    //{
+    //    // 创建树结构
+    //    Node* root = new Node(1);
+    //    Node* child1 = new Node(2);
+    //    Node* child2 = new Node(3);
+    //    Node* child3 = new Node(4);
 
-        // 测试 minDepth 函数
-        int depth = minDepth(root);
-        std::cout << "最小深度: " << depth << std::endl; // 应该输出 2 (`1->3`)
+    //    root->children.push_back(child1);
+    //    root->children.push_back(child2);
+    //    child1->children.push_back(child3);
 
-        // 清理内存
-        delete root->left->left;
-        delete root->left;
-        delete root->right;
-        delete root;
-    }
+    //    // 创建解决方案对象并调用 preorder 函数
+    //    solution_1 sol;
+    //    vector<int> preorderResult = sol.preorder(root);
+
+    //    // 输出结果
+    //    cout << "Preorder Traversal: ";
+    //    for (int val : preorderResult) {
+    //        cout << val << " ";
+    //    }
+    //    cout << endl;
+    //}
+    
+    // 101 对称二叉树
+    //{
+    //    
+    //   
+    //   // 创建二叉树 [1, 2, 2, 3, 4, 4, 3]
+    //   TreeNode* root = new TreeNode(1);
+    //   
+
+    //   // 测试
 
 
+    //    // 测试是否对称
+    //    if (isSymmetric(root)) {
+    //        std::cout << "该二叉树是对称的。" << std::endl;
+    //    }
+    //    else {
+    //        std::cout << "该二叉树不是对称的。" << std::endl;
+    //    }
+
+
+    //}
+
+  
 
 }
